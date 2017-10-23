@@ -4,7 +4,11 @@ name = "httptest"
 version = "0.1.0"
 
 [dependencies]
+futures = "0.1.16"
 hyper = "0.11.6"
+reqwest = "0.8.0"
+
+[dependencies.service-fn]
+git = "https://github.com/tokio-rs/service-fn.git"
 
 [dev-dependencies]
-reqwest = "0.8.0"
