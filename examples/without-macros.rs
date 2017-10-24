@@ -1,27 +1,21 @@
+extern crate hyper;
 extern crate reqwest;
 extern crate httptest;
 
 use std::io::Read;
 
 fn main() {
-    {
-        let ts = {
-            httptest::Server::new().run()
-        };
+    let ts = httptest::Server::run(|| {
+        Ok(httptest::service_fn(|_req| {
+            Ok(httptest::Response::<hyper::Body>::new().with_body(
+                "hello world",
+            ))
+        }))
+    });
 
-        println!("ts url: {}", ts.url());
-        let mut response = reqwest::get(&ts.url()).unwrap();
-        let mut body = String::new();
-        response.read_to_string(&mut body).unwrap();
+    let mut response = reqwest::get(&ts.url()).unwrap();
+    let mut body = String::new();
+    response.read_to_string(&mut body).unwrap();
 
-        println!("{}", body);
-        println!("sleeping");
-        std::thread::sleep(std::time::Duration::from_millis(1000));
-        println!("sleeping done");
-
-        assert_eq!(body, "Hello, World!");
-    }
-    println!("sleeping");
-    std::thread::sleep(std::time::Duration::from_millis(5000));
-    println!("sleeping done");
+    assert_eq!(body, "hello world");
 }
