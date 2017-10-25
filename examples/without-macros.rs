@@ -1,4 +1,3 @@
-extern crate hyper;
 extern crate reqwest;
 extern crate httptest;
 
@@ -7,9 +6,9 @@ use std::io::Read;
 fn main() {
     let ts = httptest::Server::run(|| {
         Ok(httptest::service_fn(|_req| {
-            Ok(httptest::Response::<hyper::Body>::new().with_body(
-                "hello world",
-            ))
+            Ok(
+                httptest::hyper::Response::<httptest::hyper::Body>::new().with_body("hello world"),
+            )
         }))
     });
 

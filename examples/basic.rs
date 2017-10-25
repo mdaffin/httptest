@@ -1,15 +1,15 @@
+extern crate hyper;
 extern crate reqwest;
-//#[macro_use]
 extern crate httptest;
 
+use std::io::Read;
+
 fn main() {
-    /*
-    let ts = serve!("hello world!");
+    let ts = httptest::serve_str("hello world".to_string());
 
-    let response = reqwest::get(ts.url);
-    let body = String::new();
-    response.read_to_string(&mut body);
+    let mut response = reqwest::get(&ts.url()).unwrap();
+    let mut body = String::new();
+    response.read_to_string(&mut body).unwrap();
 
-    assert_eq!(response.body, "hello world!");
-    */
+    assert_eq!(body, "hello world");
 }

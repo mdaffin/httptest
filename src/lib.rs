@@ -1,17 +1,37 @@
-extern crate hyper;
-extern crate futures;
+pub extern crate hyper;
+pub extern crate futures;
 extern crate reqwest;
 extern crate tokio_service;
 
 use std::thread;
 
-pub use hyper::server::Response;
-use hyper::server::{Http, Request, NewService};
-use hyper::Error;
-use futures::{Stream, Future};
+use hyper::server::{Http, NewService};
+use hyper::{Error, Response, Request, Body};
+use futures::{Stream, Future, IntoFuture};
 
 mod service_fn;
 pub use service_fn::{service_fn, ServiceFn};
+
+pub fn serve_str<S>(s: S) -> Server
+where
+    S: ToString,
+{
+    let s = s.to_string();
+    Server::run(move || {
+        let s = s.clone();
+        Ok(service_fn(
+            move |_req| Ok(Response::<Body>::new().with_body(s.clone())),
+        ))
+    })
+}
+
+pub fn serve_fn<F, R, S>(f: F) -> Server
+where
+    F: Fn(R) -> S,
+    S: IntoFuture,
+{
+    Server::run(|| Ok(service_fn(f)))
+}
 
 /// A HTTP server listening on a loopback interface on a system chosen port designed for use in
 /// unit and end to end tests. The server runs in a background thread and is cleanly stopped and
