@@ -7,30 +7,28 @@ use std::thread;
 
 use hyper::server::{Http, NewService};
 use hyper::{Error, Response, Request, Body};
-use futures::{Stream, Future, IntoFuture};
+use futures::{Stream, Future};
 
 mod service_fn;
 pub use service_fn::{service_fn, ServiceFn};
 
 pub fn serve_str<S>(s: S) -> Server
-where
-    S: ToString,
+    where S: ToString
 {
     let s = s.to_string();
     Server::run(move || {
         let s = s.clone();
-        Ok(service_fn(
-            move |_req| Ok(Response::<Body>::new().with_body(s.clone())),
-        ))
+        Ok(service_fn(move |_req| Ok(Response::<Body>::new().with_body(s.clone()))))
     })
 }
 
-pub fn serve_fn<F, R, S>(f: F) -> Server
-where
-    F: Fn(R) -> S,
-    S: IntoFuture,
+pub fn serve<B, S, Bd>(handler: S) -> Server
+    where
+        S: NewService<Request = Request, Response = Response<Bd>, Error = Error> + Send + Sync + 'static,
+        Bd: Stream<Item = B, Error = Error> + 'static,
+        B: AsRef<[u8]> + 'static,
 {
-    Server::run(|| Ok(service_fn(f)))
+    Server::run(handler)
 }
 
 /// A HTTP server listening on a loopback interface on a system chosen port designed for use in
@@ -64,7 +62,7 @@ impl Server {
         }));
 
         Server {
-            child,
+            child: child,
             done: Some(done_tx),
             local_addr: addr_rx.recv().unwrap(),
         }

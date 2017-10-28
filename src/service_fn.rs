@@ -12,9 +12,8 @@ pub struct ServiceFn<F, R> {
 }
 
 impl<F, R, S> Service for ServiceFn<F, R>
-where
-    F: Fn(R) -> S,
-    S: IntoFuture,
+    where F: Fn(R) -> S,
+          S: IntoFuture
 {
     type Request = R;
     type Response = S::Item;
@@ -28,9 +27,8 @@ where
 
 /// Returns a `Service` backed by the given closure.
 pub fn service_fn<F, R, S>(f: F) -> ServiceFn<F, R>
-where
-    F: Fn(R) -> S,
-    S: IntoFuture,
+    where F: Fn(R) -> S,
+          S: IntoFuture
 {
     ServiceFn {
         f: f,
