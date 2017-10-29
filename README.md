@@ -14,4 +14,4 @@ response.read_to_string(&mut body).unwrap();
 assert_eq!(body, "hello world");
 ```
 
-See the [examples](tree/master/examples) directory for more complete examples.
+See the [examples](examples) directory for more complete examples.
