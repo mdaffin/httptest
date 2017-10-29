@@ -1,5 +1,9 @@
 # HTTPTest
 
+This library is in eairly stages of development the api may change frequently
+as I start to make use of it. Feedback, suggestions and pull requests are
+welcome.
+
 A creates simple HTTP servers designed for use in unit and intergration
 testing. Servers a simple to create, run in a background thread and cleanly
 shutdown when they go out of scope.
